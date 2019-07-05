@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/img_float_up"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginLeft="3dp"
+        android:background="@drawable/float_cir_bg"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="U"
+        app:layout_constraintLeft_toRightOf="@id/img_float_left"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/img_float_left"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="3dp"
+        android:background="@drawable/float_cir_bg"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="L"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/img_float_up" />
+
+    <TextView
+        android:id="@+id/img_float_right"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginLeft="3dp"
+        android:layout_marginTop="3dp"
+        android:background="@drawable/float_cir_bg"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="R"
+        app:layout_constraintLeft_toRightOf="@id/img_float_up"
+        app:layout_constraintTop_toBottomOf="@id/img_float_up" />
+
+    <TextView
+        android:id="@+id/img_float_down"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="3dp"
+        android:background="@drawable/float_cir_bg"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="D"
+        app:layout_constraintStart_toStartOf="@+id/img_float_up"
+        app:layout_constraintTop_toBottomOf="@id/img_float_left" />
+
+    <TextView
+        android:id="@+id/img_float_move"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="3dp"
+        android:background="@drawable/float_cir_bg"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="M"
+        app:layout_constraintLeft_toLeftOf="@id/img_float_up"
+        app:layout_constraintTop_toBottomOf="@id/img_float_up" />
+</android.support.constraint.ConstraintLayout>
