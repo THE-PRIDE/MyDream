@@ -1,9 +1,11 @@
 package com.dream.lmy.mydream.netUtils;
 
 import android.text.TextUtils;
-import android.util.Log;
 
-import com.google.gson.JsonObject;
+import com.dream.lmy.mydream.netUtils.callback.JsonDataCallback;
+import com.dream.lmy.mydream.netUtils.callback.StringDataCallback;
+import com.dream.lmy.mydream.netUtils.request.MyRequestBody;
+import com.dream.lmy.mydream.netUtils.response.MyResponseBody;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,6 +44,9 @@ public class RequestHelper {
 
     private static final Object LOCKOBJECT = new Object();
     private static RequestHelper instance;
+    private static final int DEFAULT_TIMEOUT = 8000;
+    private JsonDataCallback jsonDataCallback;
+    private StringDataCallback stringDataCallback;
 
     /**
      * @return ICSService
@@ -56,137 +61,82 @@ public class RequestHelper {
     }
 
     /**
-     * @param num 参数
+     * 使用上送报文，响应报文都为字符串
+     *
+     * @param myRequestBody 上送报文
      */
-    public void getBookList(int num) {
+    public void checkVerifyCode(String myRequestBody) {
         Retrofit retrofit = createRetrofit();
-        if (null == retrofit) {
-            return;
-        }
-
-        RequestManager manager = retrofit.create(RequestManager.class);
-
-        Call call = manager.getResponse();
-        try {
-            call.execute();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                ResponseBody responseBody = response.body();
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable throwable) {
-
-            }
-        });
-
-    }
-
-    public void addBookToList(String name) {
-
-        Retrofit retrofit = createRetrofit();
-        if (null == retrofit) {
+        if (retrofit == null) {
             return;
         }
         RequestManager manager = retrofit.create(RequestManager.class);
-        Call call = manager.addBook(name);
-        call.enqueue(new Callback<ResponseBody>() {
+        Call<String> call = manager.checkVerifyCode(myRequestBody);
+        call.enqueue(new Callback<String>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                ResponseBody responseBody = response.body();
+            public void onResponse(Call<String> call, Response<String> response) {
+                //适用于上送报文，返回报文都是字符串
+//                try {
+//                    JSONObject jsonObject1 = new JSONObject(response.body());
+//                    JSONObject jsonObject = jsonObject1.getJSONObject("Head");
+//                    String ReturnCode = jsonObject.getString("ReturnCode");
+//                    int anInt  = jsonObject.getInt("JnlId");
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+                if (stringDataCallback != null){
+                    stringDataCallback.getDataCallback(response.body());
+                }
             }
 
             @Override
-            public void onFailure(Call<ResponseBody> call, Throwable throwable) {
-
+            public void onFailure(Call<String> call, Throwable t) {
             }
         });
-
     }
 
     /**
-     * 同步请求
+     * 使用上送报文，响应报文都为JSON对象
      *
-     * @return 列表数据
+     * @return
      */
-    public Response getListOther() throws IOException {
+    public void getToken(MyRequestBody myRequestBody) {
         Retrofit retrofit = createRetrofit();
+        if (retrofit == null) {
+            return;
+        }
         RequestManager manager = retrofit.create(RequestManager.class);
-        Call call = manager.getList();
-        Response response;
-        response = call.execute();
-        return response;
-    }
-
-    public void getList() {
-        Retrofit retrofit = createRetrofit();
-        RequestManager manager = retrofit.create(RequestManager.class);
-        Call call = manager.getList();
-
-//        try {
-//            //主线程调用此方法，会抛异常 NetworkOnMainThreadException
-//            Response response = call.execute();
-//            ResponseBody responseBody = (ResponseBody) response.body();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
-        call.enqueue(new Callback<ResponseBody>() {
+        Call<MyResponseBody> call = manager.getToken(myRequestBody);
+        call.enqueue(new Callback<MyResponseBody>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                ResponseBody body = response.body();
-                List<JsonObject> data = body.getData();
-                JsonObject jsonObjects = data.get(0);
-                jsonObjects.get("name");
-                //本地广播发送到UI界面，更新
-                Log.e("TEST", jsonObjects.get("name").toString());
-                Log.e("TEST", body.getErrorCode() + "");
-                Log.e("TEST", body.getErrorMsg());
+            public void onResponse(Call<MyResponseBody> call, Response<MyResponseBody> response) {
+                if (jsonDataCallback != null){
+                    jsonDataCallback.getDataCallback(response.body());
+                }
             }
 
             @Override
-            public void onFailure(Call<ResponseBody> call, Throwable throwable) {
+            public void onFailure(Call<MyResponseBody> call, Throwable t) {
 
             }
         });
     }
 
     private Retrofit createRetrofit() {
-        OkHttpClient client = createClient();
-        if (client == null){
+        OkHttpClient client = createOkHttp();
+        if (client == null) {
             return null;
         }
-        return new Retrofit.Builder().baseUrl(RequestConfig.baseUrl).addConverterFactory(GsonConverterFactory.create()).client(client).build();
-    }
-
-    private OkHttpClient createClient() {
-        try {
-            // Create a trust manager that does not validate certificate chains
-            final TrustManager[] trustAllCerts = new TrustManager[]{new MyTrustManager()};
-            // Install the all-trusting trust manager
-            final SSLContext sslContext = SSLContext.getInstance("SSL");
-            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
-            // Create an ssl socket factory with our all-trusting manager
-            final SSLSocketFactory sslSocketFactory = new Tls12SocketFactory(sslContext.getSocketFactory());
-
-            OkHttpClient.Builder builder = new OkHttpClient.Builder();
-            builder.connectTimeout(6000, TimeUnit.MILLISECONDS);
-            builder.sslSocketFactory(sslSocketFactory);
-            builder.hostnameVerifier(new MyHostnameVerifier());
-
-            OkHttpClient client = builder.build();
-            return client;
-        } catch (NoSuchAlgorithmException e) {
-            return null;
-        } catch (KeyManagementException e) {
-            return null;
-        } catch (RuntimeException exception) {
-            throw exception;
-        }
+        return new Retrofit.Builder()
+                //设置基础URL
+                .baseUrl(RequestConfig.baseUrl)
+                //添加上送报文，请求报文转换类(GsonConverterFactory是将上送实体，转成json格式上送，如果需要上送字符串，需要换另一个转换类)
+                .addConverterFactory(GsonConverterFactory.create())
+                //上送报文格式为字符串，打开下行，需在gradle配置响应jar包
+//                .addConverterFactory(ScalarsConverterFactory.create())
+                //添加OkHttp实例
+                .client(client)
+                .build();
     }
 
     /**
@@ -194,32 +144,26 @@ public class RequestHelper {
      *
      * @return OkHttpClient
      */
-    private OkHttpClient createOkhttp() {
+    private OkHttpClient createOkHttp() {
         try {
             // Create a trust manager that does not validate certificate chains
             final TrustManager[] trustAllCerts = new TrustManager[]{new MyTrustManager()};
-
             // Install the all-trusting trust manager
             final SSLContext sslContext = SSLContext.getInstance("SSL");
             sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
             // Create an ssl socket factory with our all-trusting manager
             final SSLSocketFactory sslSocketFactory = new Tls12SocketFactory(sslContext.getSocketFactory());
-
             OkHttpClient.Builder builder = new OkHttpClient.Builder();
-//            builder.connectTimeout(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
-//            builder.readTimeout(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
-//            builder.writeTimeout(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
+            builder.connectTimeout(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
+            builder.readTimeout(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
+            builder.writeTimeout(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
             builder.sslSocketFactory(sslSocketFactory);
             builder.hostnameVerifier(new MyHostnameVerifier());
-
-            OkHttpClient okHttpClient = builder.build();
-            return okHttpClient;
+            return builder.build();
         } catch (NoSuchAlgorithmException e) {
             return null;
         } catch (KeyManagementException e) {
             return null;
-        } catch (RuntimeException exception) {
-            throw exception;
         }
     }
 

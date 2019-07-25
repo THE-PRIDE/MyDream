@@ -1,4 +1,4 @@
-package com.dream.lmy.mydream.netUtils;
+package com.dream.lmy.mydream.netUtils.response;
 
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.Expose;
@@ -6,7 +6,10 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class ResponseBody {
+/**
+ * 响应报文
+ */
+public class MyResponseBody {
 
     @SerializedName("errorCode")
     @Expose
@@ -30,17 +33,5 @@ public class ResponseBody {
 
     public List<JsonObject> getData() {
         return data;
-    }
-
-    public void setErrorCode(int errorCode) {
-        this.errorCode = errorCode;
-    }
-
-    public void setErrorMsg(String errorMsg) {
-        this.errorMsg = errorMsg;
-    }
-
-    public void setData(List<JsonObject> data) {
-        this.data = data;
     }
 }
