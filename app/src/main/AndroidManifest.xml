@@ -9,17 +9,18 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
 
     <!--模拟位置信息-->
-    <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
     <application
         android:name=".MyApplication"
         android:allowBackup="true"
@@ -42,12 +43,15 @@
             <!-- </intent-filter> -->
         </activity>
         <!-- <activity android:name=".MainActivity" /> -->
-        <meta-data android:name="xposedmodule"
-            android:value="true"/>
-        <meta-data android:name="xposeddescription"
-            android:value="test"/>
-        <meta-data android:name="xposedmiversion"
-            android:value="54"/>
+        <meta-data
+            android:name="xposedmodule"
+            android:value="true" />
+        <meta-data
+            android:name="xposeddescription"
+            android:value="test" />
+        <meta-data
+            android:name="xposedmiversion"
+            android:value="54" />
 
         <activity android:name=".SecondActivity" />
         <activity
@@ -105,9 +109,9 @@
         </activity>
         <activity android:name=".mediaStore.MediaStoreActivity">
             <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
+            <!--<action android:name="android.intent.action.MAIN" />-->
 
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--<category android:name="android.intent.category.LAUNCHER" />-->
             <!--</intent-filter>-->
         </activity>
         <activity android:name=".databinding.DataBindingActivity" />
@@ -126,7 +130,35 @@
             </intent-filter>
         </service>
         <service android:name=".mservice.Myservice" />
+        <activity android:name=".databaselp.DataBaseLPActivity" />
+        <activity android:name=".viewStudy.ViewStudyActivity">
+            <!--<intent-filter>-->
+            <!--<action android:name="android.intent.action.MAIN" />-->
 
+            <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
+        </activity>
+        <activity android:name=".mockLocation.MockLocationActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".mockLocation.SelectLocationActivity" />
+        <activity android:name=".jsweb.JsWebActivity">
+            <!--<intent-filter>-->
+            <!--<action android:name="android.intent.action.MAIN" />-->
+
+            <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
+        </activity>
+
+        <provider
+            android:name=".permissionUtils.content.PermissionProvider"
+            android:authorities="${applicationId}.permission.provider"
+            android:exported="false"
+            android:multiprocess="true" />
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.dream.lmy.mydream.fileprovider"
@@ -135,30 +167,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
-
-        <activity android:name=".databaselp.DataBaseLPActivity"/>
-        <activity android:name=".viewStudy.ViewStudyActivity" >
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
-
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
-        </activity>
-        <activity android:name=".mockLocation.MockLocationActivity" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".mockLocation.SelectLocationActivity" />
-        <activity android:name=".jsweb.JsWebActivity" >
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
-
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
-        </activity>
     </application>
 
 </manifest>

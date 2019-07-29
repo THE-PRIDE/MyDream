@@ -70,21 +70,6 @@ public class MockLocationActivity extends AppCompatActivity implements View.OnCl
         initView();
         initListener();
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-//        getNetInfo();
-//        Location location;
-//        Method method = Class.forName("android.location.LocationManager").getMethod("getLastLocation");
-//        method.invoke(Class.forName("android.location.LocationManager"));
-//        location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-//        if (location != null) {
-//            latitude = location.getLatitude();
-//            longitude = location.getLongitude();
-//        } else {
-//            Toast.makeText(MockLocationActivity.this, "获取位置信息失败", Toast.LENGTH_SHORT).show();
-//        }
-//        mTvLatitude.setText(String.valueOf(latitude));
-//        mEtLatitude.setText(String.valueOf(latitude));
-//        mTvLongitude.setText(String.valueOf(longitude));
-//        mEtLongitude.setText(String.valueOf(longitude));
     }
 
     void initView() {
@@ -92,25 +77,19 @@ public class MockLocationActivity extends AppCompatActivity implements View.OnCl
         mEtLongitude = findViewById(R.id.et_longitude);
         mBtnStart = findViewById(R.id.btn_start);
         mBtnClear = findViewById(R.id.btn_clear);
-
         mEtLocation = findViewById(R.id.et_location);
         mBtnSelectLocation = findViewById(R.id.btn_select_mock_location);
-
         mTvCurrentLat = findViewById(R.id.tv_current_latitude);
         mTvCurrentLong = findViewById(R.id.tv_current_longitude);
-
         mEtMockStep = findViewById(R.id.et_mock_step);
-
         mBtnOpen = findViewById(R.id.btn_open);
         mBtnClose = findViewById(R.id.btn_close);
-
     }
 
     void initListener() {
         mBtnClear.setOnClickListener(this);
         mBtnStart.setOnClickListener(this);
         mBtnSelectLocation.setOnClickListener(this);
-
         mBtnOpen.setOnClickListener(this);
         mBtnClose.setOnClickListener(this);
     }
@@ -118,7 +97,6 @@ public class MockLocationActivity extends AppCompatActivity implements View.OnCl
     private boolean hasAddTestProvider() {
         boolean hasAddTestProvider = false;
         boolean canMockPosition = Settings.Secure.getInt(getContentResolver(), Settings.Secure.ALLOW_MOCK_LOCATION, 0) != 0 || Build.VERSION.SDK_INT > 22;
-
         if (canMockPosition) {
             String providerStr = locationManager.GPS_PROVIDER;
             LocationProvider provider = locationManager.getProvider(providerStr);
@@ -138,10 +116,8 @@ public class MockLocationActivity extends AppCompatActivity implements View.OnCl
                 locationManager.addTestProvider(providerStr, true, true, false, false, true, true, true, Criteria.POWER_HIGH,
                         Criteria.ACCURACY_FINE);
             }
-
             locationManager.setTestProviderEnabled(providerStr, true);
             locationManager.setTestProviderStatus(providerStr, LocationProvider.AVAILABLE, null, System.currentTimeMillis());
-
             return true;
         }
         return false;
@@ -211,9 +187,6 @@ public class MockLocationActivity extends AppCompatActivity implements View.OnCl
         switch (v.getId()) {
             case R.id.btn_clear:
                 clearInput();
-//                Intent intent = new Intent(MockLocationActivity.this, WeexWebActivity.class);
-//                Intent intent = new Intent(MockLocationActivity.this, CsiiFaceStartActivity.class);
-//                startActivity(intent);
                 break;
             case R.id.btn_start:
                 parseLocation();
@@ -301,13 +274,6 @@ public class MockLocationActivity extends AppCompatActivity implements View.OnCl
                     try {
                         String providerStr = LocationManager.GPS_PROVIDER;
                         Location mockLocation = new Location(providerStr);
-//                        mockLocation.setLatitude(39.939859);//维度
-//                        mockLocation.setLongitude(116.4912);//经度
-//                        mockLocation.setLatitude(36.59771931990231);//维度
-//                        mockLocation.setLongitude(114.48994916872005);//经度
-//                        mockLocation.setLatitude(30.6687779764);//维度
-//                        mockLocation.setLongitude(104.0713297073);//经度
-
                         mockLocation.setLatitude(latitude);//维度
                         mockLocation.setLongitude(longitude);//经度
                         mockLocation.setAltitude(30);//高度
@@ -364,7 +330,6 @@ public class MockLocationActivity extends AppCompatActivity implements View.OnCl
         layoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
         layoutParams.x = 200;
         layoutParams.y = 200;
-
         // 将悬浮窗控件添加到WindowManager
         windowManager.addView(view, layoutParams);
 

@@ -5,7 +5,6 @@ import android.os.Process;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import com.dream.lmy.mydream.RxUtils.RxJavaHelper;
 import com.dream.lmy.mydream.common.ProcessUtils;
 import com.dream.lmy.mydream.aidl.UserManager;
 

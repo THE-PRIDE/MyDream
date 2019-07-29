@@ -8,7 +8,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
-import com.dream.lmy.mydream.RxUtils.RxJavaHelper;
 import com.dream.lmy.mydream.aidl.UserManager;
 
 public class ScrollingActivity extends AppCompatActivity {
