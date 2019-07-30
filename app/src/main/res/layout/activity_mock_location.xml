@@ -10,6 +10,7 @@
         android:layout_height="wrap_content"
         android:padding="5dp"
         android:text="lat"
+        android:visibility="gone"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -19,7 +20,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:padding="5dp"
+
         android:text="long"
+        android:visibility="gone"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_current_latitude" />
 
@@ -90,6 +93,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="0.0003"
+        android:visibility="gone"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_location" />
 
@@ -97,6 +101,8 @@
         android:id="@+id/btn_start"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/float_cir_bg"
         android:text="Start"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/et_mock_step" />
@@ -105,22 +111,26 @@
         android:id="@+id/btn_clear"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:background="@drawable/float_cir_bg"
         android:text="clear"
         app:layout_constraintLeft_toRightOf="@id/btn_start"
-        app:layout_constraintTop_toBottomOf="@id/et_mock_step" />
+        app:layout_constraintTop_toTopOf="@id/btn_start" />
 
     <Button
         android:id="@+id/btn_select_mock_location"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:background="@drawable/float_cir_bg"
         android:text="select"
         app:layout_constraintLeft_toRightOf="@id/btn_clear"
-        app:layout_constraintTop_toBottomOf="@id/et_mock_step" />
+        app:layout_constraintTop_toTopOf="@id/btn_start" />
 
     <Button
         android:id="@+id/btn_open"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/float_cir_bg"
         android:text="open"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_start" />
@@ -129,6 +139,8 @@
         android:id="@+id/btn_close"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/float_cir_bg"
         android:text="close"
         app:layout_constraintLeft_toRightOf="@id/btn_open"
         app:layout_constraintTop_toBottomOf="@id/btn_start" />

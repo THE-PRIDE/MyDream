@@ -67,17 +67,6 @@
             <!-- </intent-filter> -->
         </activity>
         <activity android:name=".MessengerActivity" />
-        <activity
-            android:name=".common.MyGuideUtils"
-            android:theme="@style/AppTheme.NoActionBar">
-
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
-
-
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
-        </activity>
         <activity android:name=".aidl.BookManagerActivity">
 
             <!-- <intent-filter> -->
@@ -130,6 +119,7 @@
             </intent-filter>
         </service>
         <service android:name=".mservice.Myservice" />
+
         <activity android:name=".databaselp.DataBaseLPActivity" />
         <activity android:name=".viewStudy.ViewStudyActivity">
             <!--<intent-filter>-->
@@ -139,11 +129,11 @@
             <!--</intent-filter>-->
         </activity>
         <activity android:name=".mockLocation.MockLocationActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            <!--<intent-filter>-->
+            <!--<action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
         </activity>
         <activity android:name=".mockLocation.SelectLocationActivity" />
         <activity android:name=".jsweb.JsWebActivity">
@@ -152,6 +142,15 @@
 
             <!--<category android:name="android.intent.category.LAUNCHER" />-->
             <!--</intent-filter>-->
+        </activity>
+        <activity
+            android:name=".LaunchActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
 
         <provider

@@ -33,7 +33,6 @@ public class ScrollingActivity extends AppCompatActivity {
             public void onClick(View v) {
 //                intent.setClass(ScrollingActivity.this, SecondActivity.class);
 //                startActivity(intent);
-                RxJavaHelper.getInstance().testRxMap();
             }
         });
 

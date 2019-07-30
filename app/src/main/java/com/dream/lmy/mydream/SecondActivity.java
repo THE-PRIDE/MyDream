@@ -25,6 +25,5 @@ public class SecondActivity extends AppCompatActivity {
     private void getBookList(){
 
 //        RequestHelper.getInstance().getList();
-        RxJavaHelper.creatRxDemo();
     }
 }

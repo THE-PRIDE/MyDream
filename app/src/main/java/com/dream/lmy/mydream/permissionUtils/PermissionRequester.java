@@ -4,11 +4,11 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Application;
 
-import com.module.csii.common.Logger;
-import com.module.csii.permissionUtils.bean.Permission;
-import com.module.csii.permissionUtils.content.PermissionActivityLifecycle;
-import com.module.csii.permissionUtils.fragment.FragmentProxy;
-import com.module.csii.permissionUtils.fragment.PermissionFragmentFactory;
+import com.dream.lmy.mydream.common.Logger;
+import com.dream.lmy.mydream.permissionUtils.bean.Permission;
+import com.dream.lmy.mydream.permissionUtils.content.PermissionActivityLifecycle;
+import com.dream.lmy.mydream.permissionUtils.fragment.FragmentProxy;
+import com.dream.lmy.mydream.permissionUtils.fragment.PermissionFragmentFactory;
 
 import static android.os.Build.VERSION_CODES.M;
 
