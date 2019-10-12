@@ -10,6 +10,7 @@ import android.location.LocationProvider;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.SystemClock;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
@@ -29,6 +30,11 @@ import android.widget.Toast;
 
 import com.dream.lmy.mydream.R;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 
@@ -60,16 +66,17 @@ public class MockLocationActivity extends AppCompatActivity implements View.OnCl
     private TextView mTvFloatRight;
     private TextView mTvFloatDown;
     private TextView mTvFloatMove;
+    boolean hasAddTestProvider = true;
 
 
-    @SuppressLint("MissingPermission")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mock_location);
-        initView();
-        initListener();
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        initView();
+        initData();
+        initListener();
     }
 
     void initView() {
@@ -86,40 +93,103 @@ public class MockLocationActivity extends AppCompatActivity implements View.OnCl
         mBtnClose = findViewById(R.id.btn_close);
     }
 
+    void initData() {
+        String filePath = Environment.getExternalStorageDirectory() + "/test.txt";
+        File file = new File(filePath);
+        if (file.exists()) {
+            return;
+        }
+//        InputStreamReader reader = new InputStreamReader(inputStream);
+//        BufferedReader bufferedReader = new BufferedReader(reader);
+//        File file = new File(filePath);
+//        file.createNewFile();
+        InputStream inputStream = null;
+        FileOutputStream fileOutputStream = null;
+        try {
+            inputStream = getAssets().open("test.txt");
+            fileOutputStream = new FileOutputStream(filePath);
+            byte[] line = new byte[1024];
+            int length = inputStream.read(line);
+
+            while (length != -1) {
+                fileOutputStream.write(line, 0, length);
+                length = inputStream.read(line);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
     void initListener() {
         mBtnClear.setOnClickListener(this);
         mBtnStart.setOnClickListener(this);
         mBtnSelectLocation.setOnClickListener(this);
         mBtnOpen.setOnClickListener(this);
         mBtnClose.setOnClickListener(this);
+        try {
+            hasAddTestProvider();
+        } catch (Exception e) {
+            LogUtils.writeLogToSd(e.getMessage());
+        }
     }
 
     private boolean hasAddTestProvider() {
-        boolean hasAddTestProvider = false;
-        boolean canMockPosition = Settings.Secure.getInt(getContentResolver(), Settings.Secure.ALLOW_MOCK_LOCATION, 0) != 0 || Build.VERSION.SDK_INT > 22;
+        LogUtils.writeLogToSd("provider_begin");
+        boolean canMockPosition = true;
+        try {
+            canMockPosition = Settings.Secure.getInt(getContentResolver(), Settings.Secure.ALLOW_MOCK_LOCATION, 0) != 0 || Build.VERSION.SDK_INT > 22;
+            LogUtils.writeLogToSd("canMockPosition");
+        } catch (Exception e) {
+            LogUtils.writeLogToSd("setting" + e.getMessage());
+        }
         if (canMockPosition) {
             String providerStr = locationManager.GPS_PROVIDER;
-            LocationProvider provider = locationManager.getProvider(providerStr);
+            LocationProvider provider = null;
+            try {
+                LogUtils.writeLogToSd("TEST_gps" + locationManager.isProviderEnabled(locationManager.GPS_PROVIDER));
+                LogUtils.writeLogToSd("TEST_net" + locationManager.isProviderEnabled(locationManager.NETWORK_PROVIDER));
+                provider = locationManager.getProvider(providerStr);
+            } catch (Exception e) {
+                LogUtils.writeLogToSd(e.getMessage());
+            }
             if (provider != null) {
-                locationManager.addTestProvider(
-                        provider.getName()
-                        , provider.requiresNetwork()
-                        , provider.requiresSatellite()
-                        , provider.requiresCell()
-                        , provider.hasMonetaryCost()
-                        , provider.supportsAltitude()
-                        , provider.supportsSpeed()
-                        , provider.supportsBearing()
-                        , provider.getPowerRequirement()
-                        , provider.getAccuracy());
+                try {
+                    LogUtils.writeLogToSd("provider not null");
+                    locationManager.addTestProvider(
+                            provider.getName()
+                            , provider.requiresNetwork()
+                            , provider.requiresSatellite()
+                            , provider.requiresCell()
+                            , provider.hasMonetaryCost()
+                            , provider.supportsAltitude()
+                            , provider.supportsSpeed()
+                            , provider.supportsBearing()
+                            , provider.getPowerRequirement()
+                            , provider.getAccuracy());
+                } catch (Exception e) {
+                    LogUtils.writeLogToSd("add" + e.getMessage());
+                }
             } else {
-                locationManager.addTestProvider(providerStr, true, true, false, false, true, true, true, Criteria.POWER_HIGH,
-                        Criteria.ACCURACY_FINE);
+                try {
+                    LogUtils.writeLogToSd("provider is null");
+                    locationManager.addTestProvider(providerStr, true, true, false, false, true, true, true, Criteria.POWER_HIGH,
+                            Criteria.ACCURACY_FINE);
+                } catch (Exception e) {
+                    LogUtils.writeLogToSd(e.getMessage());
+                }
             }
             locationManager.setTestProviderEnabled(providerStr, true);
             locationManager.setTestProviderStatus(providerStr, LocationProvider.AVAILABLE, null, System.currentTimeMillis());
+            LogUtils.writeLogToSd("provider_end_true");
+            hasAddTestProvider = true;
             return true;
         }
+        LogUtils.writeLogToSd("provider_end_false");
+        hasAddTestProvider = false;
         return false;
     }
 
@@ -177,9 +247,11 @@ public class MockLocationActivity extends AppCompatActivity implements View.OnCl
     private void startMockLocation() {
         mTvCurrentLat.setText("当前模拟纬度: " + latitude);
         mTvCurrentLong.setText("当前模拟经度: " + longitude);
-        Thread thread = new Thread(new RunnableMockLocation());
-        thread.setName("mock_location");
-        thread.start();
+        if (hasAddTestProvider) {
+            Thread thread = new Thread(new RunnableMockLocation());
+            thread.setName("mock_location");
+            thread.start();
+        }
     }
 
     @Override
@@ -247,10 +319,10 @@ public class MockLocationActivity extends AppCompatActivity implements View.OnCl
             startMockLocation();
         } else if (requestCode == 12 && resultCode == RESULT_CANCELED) {
             Toast.makeText(MockLocationActivity.this, "未选择地址", Toast.LENGTH_SHORT).show();
-        } else if (requestCode == 22){
+        } else if (requestCode == 22) {
             if (!Settings.canDrawOverlays(this)) {
                 Toast.makeText(this, "授权失败", Toast.LENGTH_SHORT).show();
-            }else {
+            } else {
                 createWinView();
             }
         }
@@ -261,7 +333,6 @@ public class MockLocationActivity extends AppCompatActivity implements View.OnCl
      */
     private class RunnableMockLocation implements Runnable {
 
-        @SuppressLint("MissingPermission")
         @Override
         public void run() {
             while (true) {
@@ -270,26 +341,29 @@ public class MockLocationActivity extends AppCompatActivity implements View.OnCl
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                if (hasAddTestProvider()) {
-                    try {
-                        String providerStr = LocationManager.GPS_PROVIDER;
-                        Location mockLocation = new Location(providerStr);
-                        mockLocation.setLatitude(latitude);//维度
-                        mockLocation.setLongitude(longitude);//经度
-                        mockLocation.setAltitude(30);//高度
-                        mockLocation.setBearing(180);// 方向
-                        mockLocation.setSpeed(10);// 速度
-                        mockLocation.setAccuracy(0.1f);// 精度（米）
-                        mockLocation.setTime(new Date().getTime());
-                        mockLocation.setElapsedRealtimeNanos(SystemClock.elapsedRealtimeNanos());
-                        locationManager.setTestProviderLocation(providerStr, mockLocation);
-                        Location location = locationManager.getLastKnownLocation(providerStr);
-                        Log.e("LOCATION", "MOCK_LOCATION" + location.getLatitude());
-                        Log.e("LOCATION", "MOCK_LOCATION" + location.getLongitude());
-                    } catch (Exception e) {
-                        Log.e("LOCATION", "locationManager" + locationManager);
-                        Log.e("LOCATION", "MOCK_LOCATION_ERROR");
-                    }
+                try {
+                    String providerStr = LocationManager.GPS_PROVIDER;
+                    Location mockLocation = new Location(providerStr);
+                    mockLocation.setLatitude(latitude);//维度
+                    mockLocation.setLongitude(longitude);//经度
+                    mockLocation.setAltitude(30);//高度
+                    mockLocation.setBearing(180);// 方向
+                    mockLocation.setSpeed(10);// 速度
+                    mockLocation.setAccuracy(0.1f);// 精度（米）
+                    mockLocation.setTime(new Date().getTime());
+                    mockLocation.setElapsedRealtimeNanos(SystemClock.elapsedRealtimeNanos());
+                    locationManager.setTestProviderLocation(providerStr, mockLocation);
+                    LogUtils.writeLogToSd("mock_begin");
+
+                    @SuppressLint("MissingPermission") Location location = locationManager.getLastKnownLocation(providerStr);
+                    Log.e("LOCATION", "MOCK_LOCATION" + location.getLatitude());
+                    Log.e("LOCATION", "MOCK_LOCATION" + location.getLongitude());
+
+                    LogUtils.writeLogToSd("MOCK_LOCATION" + location.getLatitude());
+                } catch (Exception e) {
+                    LogUtils.writeLogToSd("run_is" + e.getMessage());
+                    Log.e("LOCATION", "locationManager" + locationManager);
+                    Log.e("LOCATION", "MOCK_LOCATION_ERROR");
                 }
             }
         }
@@ -297,7 +371,11 @@ public class MockLocationActivity extends AppCompatActivity implements View.OnCl
 
 
     private void openWindow() {
-        startActivityForResult(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName())), 22);
+        if (!VIEW_IS_SHOW) {
+            startActivityForResult(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName())), 22);
+        } else {
+            Toast.makeText(this, "浮窗已开启", Toast.LENGTH_SHORT).show();
+        }
     }
 
     WindowManager.LayoutParams layoutParams;
@@ -305,9 +383,11 @@ public class MockLocationActivity extends AppCompatActivity implements View.OnCl
     View view;
     int x = 0;
     int y = 0;
-    private void createWinView(){
+    public static boolean VIEW_IS_SHOW = false;
+
+    private void createWinView() {
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-        view = LayoutInflater.from(this).inflate(R.layout.view_float_layout,null);
+        view = LayoutInflater.from(this).inflate(R.layout.view_float_layout, null);
 
         mTvFloatUp = view.findViewById(R.id.img_float_up);
         mTvFloatLeft = view.findViewById(R.id.img_float_left);
@@ -315,7 +395,7 @@ public class MockLocationActivity extends AppCompatActivity implements View.OnCl
         mTvFloatDown = view.findViewById(R.id.img_float_down);
         mTvFloatMove = view.findViewById(R.id.img_float_move);
         initFloatListener();
-         layoutParams = new WindowManager.LayoutParams();
+        layoutParams = new WindowManager.LayoutParams();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             layoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
         } else {
@@ -324,7 +404,7 @@ public class MockLocationActivity extends AppCompatActivity implements View.OnCl
         //设置图片格式，效果为背景透明
         layoutParams.format = PixelFormat.RGBA_8888;
         //设置悬浮窗口长宽数据
-        layoutParams.width = WindowManager.LayoutParams.WRAP_CONTENT ;
+        layoutParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
         layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
         //设置浮动窗口不可聚焦（实现操作除浮动窗口外的其他可见窗口的操作）
         layoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
@@ -332,16 +412,18 @@ public class MockLocationActivity extends AppCompatActivity implements View.OnCl
         layoutParams.y = 200;
         // 将悬浮窗控件添加到WindowManager
         windowManager.addView(view, layoutParams);
-
+        VIEW_IS_SHOW = true;
     }
 
-    private void closeWinView(){
-        if (windowManager != null){
+    private void closeWinView() {
+        if (windowManager != null) {
             windowManager.removeView(view);
         }
+        VIEW_IS_SHOW = false;
     }
+
     @SuppressLint("ClickableViewAccessibility")
-    void initFloatListener(){
+    void initFloatListener() {
         mTvFloatUp.setOnClickListener(this);
         mTvFloatLeft.setOnClickListener(this);
         mTvFloatRight.setOnClickListener(this);
